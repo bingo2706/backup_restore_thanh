@@ -70,12 +70,13 @@ namespace Backup_Thanh
         }
         private void RestoreDiaglog(String dtStopAt)
         {
+            soLuongBanSaoLuu = int.Parse(((DataRowView)bdsBackup[0])["position"].ToString());
             DialogResult rsdiaglog = MessageBox.Show("Thời gian phục hồi: " + dtStopAt, Program.Db + " - Restore dialog", MessageBoxButtons.OKCancel);
             if (rsdiaglog == DialogResult.OK)
             {
                 String strFullPathBackLog = Program.defaultDeviceFilePath + Program.Db + ".TRN";
-                strRestore += "BACKUP LOG " + Program.Db + " TO DISK='" + strFullPathBackLog + "' WITH INIT\n "
-                   + "RESTORE DATABASE " + Program.Db + " FROM DISK='" + deviceFullFilePath + "' WITH NORECOVERY , REPLACE\n "
+                strRestore += "BACKUP LOG " + Program.Db + " TO DISK='" + strFullPathBackLog + "' WITH INIT, NORECOVERY; \n "
+                   + "RESTORE DATABASE " + Program.Db + " FROM " + tenDevice + " WITH FILE= " + soLuongBanSaoLuu + ", NORECOVERY; \n "
                     + "RESTORE DATABASE " + Program.Db + " FROM DISK='" + strFullPathBackLog + "' WITH STOPAT='" + dtStopAt
                     + "'\n ALTER DATABASE " + Program.Db + " SET MULTI_USER";
                 int checkErr = Program.ExecSqlNonQuery(strRestore, Program.connstr, "lỗi phục hồi cơ sở dữ liệu");
@@ -100,8 +101,7 @@ namespace Backup_Thanh
                 else
                 {
                     MessageBox.Show(" Phục hồi thất bại ", "", MessageBoxButtons.OK);
-                    string tmpQuery = "RESTORE DATABASE " + Program.Db + " WITH RECOVERY";
-                    Program.ExecSqlNonQuery(tmpQuery, Program.connstr, "lỗi phục hồi cơ sở dữ liệu");
+                   
                 }
             }
 
@@ -303,13 +303,13 @@ namespace Backup_Thanh
                 return;
             }
             if (Program.conn != null && Program.conn.State == ConnectionState.Open)
-                Program.conn.Close(); // đóng kết nối 
+                Program.conn.Close();
             if (txbTenDB.Text.Trim() == "" || tenDevice == "") return;
             strRestore = "ALTER DATABASE " + txbTenDB.Text + " SET SINGLE_USER WITH ROLLBACK IMMEDIATE " + "USE tempdb ";
             if (btnThamSoThoiGian.Checked == false)
             {
                 strRestore += "RESTORE DATABASE " + txbTenDB.Text + " FROM " + tenDevice + " WITH FILE= " + soLuongBanSaoLuu + ",REPLACE " + "ALTER DATABASE " + Program.Db + " SET MULTI_USER";
-                //   MessageBox.Show(strRestore, "", MessageBoxButtons.OK);
+                
                 err = Program.ExecSqlNonQuery(strRestore, Program.connstr, "lỗi phục hồi cơ sở dữ liệu");
                 if (err == 0)
                 {
@@ -332,7 +332,7 @@ namespace Backup_Thanh
             }
             else
             {
-                DateTime ngaygioBK = (DateTime)((DataRowView)bdsBackup[bdsBackup.Position])["backup_start_date"];
+                DateTime ngaygioBK = (DateTime)((DataRowView)bdsBackup[0])["backup_start_date"];
                 DateTime dateStop = dtpDate.Value.Date + dtptTimeStop.Value.TimeOfDay;
                 String dt = dtpDate.Value.ToString("yyyy-MM-dd") + " " + dtptTimeStop.Value.ToString("HH:mm:ss");
                 if ((dtpDate.Value.Date < ngaygioBK.Date) || (dtpDate.Value.Date == ngaygioBK.Date && dtptTimeStop.Value.Ticks < ngaygioBK.TimeOfDay.Ticks))
@@ -356,15 +356,13 @@ namespace Backup_Thanh
             }
         }
 
-        private void gridView2_RowClick(object sender, DevExpress.XtraGrid.Views.Grid.RowClickEventArgs e)
-        {
-            soLuongBanSaoLuu = int.Parse(((DataRowView)bdsBackup[bdsBackup.Position])["position"].ToString());
-        }
+     
 
         private void gridView2_RowClick_1(object sender, DevExpress.XtraGrid.Views.Grid.RowClickEventArgs e)
         {
-            //table backup
+         
             backupsetId = int.Parse(((DataRowView)bdsBackup[bdsBackup.Position])["backup_set_id"].ToString());
+            soLuongBanSaoLuu = int.Parse(((DataRowView)bdsBackup[bdsBackup.Position])["position"].ToString());
         }
 
         private void xóaToolStripMenuItem_Click(object sender, EventArgs e)
@@ -400,6 +398,11 @@ namespace Backup_Thanh
             
             }
            
+
+        }
+
+        private void txbTenDB_TextChanged(object sender, EventArgs e)
+        {
 
         }
     }

@@ -548,6 +548,7 @@ namespace Backup_Thanh
             this.txbTenDB.ReadOnly = true;
             this.txbTenDB.Size = new System.Drawing.Size(206, 23);
             this.txbTenDB.TabIndex = 1;
+            this.txbTenDB.TextChanged += new System.EventHandler(this.txbTenDB_TextChanged);
             // 
             // label1
             // 
@@ -598,12 +599,12 @@ namespace Backup_Thanh
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.xóaToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(211, 56);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(105, 28);
             // 
             // xóaToolStripMenuItem
             // 
             this.xóaToolStripMenuItem.Name = "xóaToolStripMenuItem";
-            this.xóaToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.xóaToolStripMenuItem.Size = new System.Drawing.Size(104, 24);
             this.xóaToolStripMenuItem.Text = "Xóa";
             this.xóaToolStripMenuItem.Click += new System.EventHandler(this.xóaToolStripMenuItem_Click);
             // 
